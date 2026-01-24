@@ -1,0 +1,9 @@
+obj/debug/
+obj/release/
+ClaMSS.dll
+ClaRUN.dll
+ClaASC.dll
+*.MAP
+spBrwQueue.sln.cache
+*.LOG
+spBrwQueue.exe
