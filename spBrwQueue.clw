@@ -21,7 +21,6 @@ myWindow WINDOW('Caption'),AT(,,503,224),GRAY,FONT('Segoe UI',9)
         '#7#80L(2)|M~row number~L(0)@s50@#8#')
   END
 
-
 thisWindow class(windowManager),type
 spBrw                 &spBrowseQueue
 init                       procedure(),byte,virtual,proc
@@ -68,6 +67,7 @@ retv byte,auto
       win.spBrw.init(personFile, personFile.Record, personQ, ?personList)
       win.spBrw.setRowNumberPos(where(personQ, personQ.rowNumber)) 
       win.spBrw.setDbNames('person', 'person')
+      win.spBrw.setSqlCode('call dbo.readTableOnePaged(&offset [in], &pageSize [in])')
        self.loadQueue()
     end 
   end
@@ -77,11 +77,10 @@ retv byte,auto
 thisWindow.loadQueue procedure()
 
 retv byte,auto
-s string('call dbo.readTableOnePaged(&offset [in], &pageSize [in])')
 
   code
 
-  retv = win.spBrw.loadQueue(s, 0)
+  retv = win.spBrw.loadQueue(0)
 
   select(?personList)
   ?personList{prop:selected} = 1

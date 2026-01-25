@@ -103,26 +103,17 @@ retv      long,auto
 
   code 
 
+  bind('inschemaName', self.schemaName)
+  bind('intableName', self.tableName)
   bind('retv', retv)
   
-  self.myFile{prop:sql} = |
-    'create or alter procedure dbo.#countIt(@retv int out)  as  begin  '  & |
-    'select @retv = sum(p.rows) ' & |
-     'from sys.tables t ' & |
-      ' inner join sys.partitions p on ' & |
-      '   t.object_id = p.object_id ' &  |
-      ' where t.schema_id = schema_id('&clip(self.schemaName)&') and  ' & |
-      ' t.name = '&clip(self.tableName)&' and  ' & |
-     ' p.index_id in (0, 1); ' & |
-     ' return;   end;'
-  if (errorcode() > 0) 
-    return -1
-  end
-  self.myFile{prop:sql} = 'noresultcall dbo.#countit(&retv [out]);'
+  self.myFile{prop:sql} = 'noresultcall dbo.readPartitionRows(&inSchemaName [in], &inTableName [in], &retv [out])';
   if (errorcode() > 0)
     retv = -1
   end
-  
+
+  unbind('inschemaName')
+  unbind('intableName')
   unbind('retv')
 
   return retv

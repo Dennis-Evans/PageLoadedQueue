@@ -82,9 +82,12 @@ spBrowseQueueBase.setDbNames procedure(string sn, string tn)
 
 
   code
+
+  self.schemaname =  sn
+  self.tablename = tn
   
-  self.schemaname = '<39>' & sn & '<39>'
-  self.tablename = '<39>' & tn & '<39>'
+!  self.schemaname = '<39>' & sn & '<39>'
+!  self.tablename = '<39>' & tn & '<39>'
 
   return 
 ! ----------------------------------------------------------------------
@@ -172,9 +175,6 @@ spBrowseQueueBase.getNumberRows procedure() !long
 retv   long,auto
 
    code
-
-    !retv = self.countRows(self.schemaName, self.tableName)
-
    return self.totalRows
 ! ------------------------------------------------------------------
 !endregion getters and setters 
@@ -453,6 +453,9 @@ savePageSize long,auto
 !endregion scrolling 
 
 !region general workers 
+!!!<summary>
+!!! updates the instances members on a new selection of the list
+!!!</summary>
 spBrowseQueueBase.takeNewSelection procedure()
 
   code
@@ -476,6 +479,7 @@ spBrowseQueueBase.countRows procedure(string schemaName, string tableName) !virt
    return 0
 ! ---------------------------------------------------------------------------------------
 
+! updates the group from the queue and set the current row number property 
 spBrowseQueueBase.updateGroup      procedure() ! virtual
 
 a any,auto

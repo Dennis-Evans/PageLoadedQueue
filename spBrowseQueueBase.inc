@@ -14,23 +14,77 @@ firstRow                  equate(1)
 maxMsLabel           equate(128) 
 
 !!!<summary>
-!!! object to read and load a queue from a stored procedure call
+!!! object to read and load a queue from a stored procedure call.  typically page loaded using the 
+!!! offset and page size options with MS Sql Server.
 !!!</summary>
 spBrowseQueueBase  class,type,implements(windowComponent),module('spBrowseQueueBase.clw'),LINK('spBrowseQueueBase.clw',_ABCLinkMode_),DLL(_ABCDllMode_)
 !region fields 
+!!!<summary>
+!!! reference to the group structure used by the instance
+!!! typically matches the file structure but not required 
+!!!</summary>
 fGrp                           &group,protected 
+
+!!!<summary>
+!!! reference to the queue structure used by the instance for the list
+!!!</summary>
 Que                           &queue,protected
+
+!!!<summary>
+!!! feq of the list control 
+!!!</summary>
 listControl                 long,private
+
+!!!<summary>
+!!! index into the queue 
+!!!</summary>
 queIndex                   long,private
+
+!!!<summary>
+!!! current row number of the queue, this is a ordinal not an index 
+!!!</summary>
 rowNumber               long,private
+
+!!!<summary>
+!!! potion of the row number field in the queue 
+!!!</summary>
 rowNumberPos        long,private
+
+!!!<summary>
+!!! flag that indicates the queue element read should be added at the first position 
+!!! when true added to the top, false added at the end 
+!!!</summary>
 addTop                      bool,private
+
+!!!<summary>
+!!! offset into the table for the read, row number to start at.  
+!!! the table read is zero based not one based 
+!!!</summary>
 offset                          long,private
+
+!!!<summary>
+!!! number of rows to be read for each call.  150 to 200 rows would be common,  in some cases up to 300 rows could be used
+!!! for web application the page size could be smaller
+!!!</summary>
+!!!<remarks>
+!!! performance on the number of rows will vary, the instance should be tested to find optimal performance.
+!!! formatting the queue elements for display can cause slow downs
+!!!</remarks>
 pageSize                   long,private
+
+!!!<summary>
+!!! total rows in the table being read 
+!!!</summary>
 totalRows                  long,private
+
+!!!<summary>
+!!! SQL statement used to read 
+!!!</summary>
 sqlCode                     &IDynStr,private
+
 schemaName           string(maxMsLabel),protected
 tableName                string(maxMsLabel),protected
+
 debugStrOut             &debugStrOut,protected
 !endregion fields 
 
@@ -221,8 +275,28 @@ moveUpOne               procedure()
 !endregion scrolling 
 
 !region general workers 
+!!!<summary>
+!!! updates the instances members on a new selection of the list
+!!!</summary>
 takeNewSelection   procedure()
+
+!!!<summary>
+!!! gets a count of the rows in the data source.  
+!!!</summary>
+!!!<remarks>
+!!!<returns>
+!!! number of rows in the source
+!!!</returns>
+!!! this call for MS Sql Server back ends uses thge rows column for the partition view on the meta data.
+!!! while acurate it may not be updated immediatly following a roll back or a bulk operations,
+!!! but is significantly faster than the count aggragete.
+!!! this must be overloaded in a derived object 
+!!!</remarks> 
 countRows                 procedure(string schemaName, string tableName),long,virtual,protected
+
+!!!<summary>
+!!! updates the queue and sets the row number field to the current value
+!!!</summary>
 updateGroup             procedure(),virtual
 !endregion general workers 
 
