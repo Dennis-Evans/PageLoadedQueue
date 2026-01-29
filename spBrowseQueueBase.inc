@@ -9,7 +9,7 @@ _spPageBrowseQueueBase_         EQUATE(1)
   include('debugStringOut.inc'),once
 
 startOffset             equate(0)
-defaultPageSize   equate(200)
+defaultPageSize   equate(100)
 firstRow                  equate(1)
 maxMsLabel           equate(128) 
 
@@ -243,9 +243,6 @@ takeScrollEnd           procedure(long ev)
 !!!<summary>
 !!! scrolls the queue one page up or down
 !!!</summary>
-!!!<remarks>
-!!! calls the move page u[/down functions 
-!!!</remarks>
 takeScrollPage         procedure(long ev)
 
 !!!<summary>
@@ -264,7 +261,16 @@ movePageUp            procedure(), private
 !!!<param name='listIndex'>
 !!!index into the list or the queue, postions the list
 !!!</param>
-scrollPage                  procedure(long listIndex), private 
+scrollPage                  procedure(long listIndex),private 
+
+!!!<summary>
+!!! checks the potion of the queue is on the first row or the last row.
+!!! ;ast row is the last row in the table not the last row based on the page size 
+!!!</summary>
+!!!<remarks>
+!!! called by movePageUp
+!!!</remarks>
+onMaxOrMin             procedure(),bool,private 
 !endregion scroll page up/down
 
 !region scroll one row 

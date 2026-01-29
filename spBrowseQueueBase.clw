@@ -294,6 +294,7 @@ spBrowseQueueBase.takeScrollPage procedure(long ev)
   end 
 
   self.updateGroup()
+
   display(self.listControl)
 
   return
@@ -301,28 +302,24 @@ spBrowseQueueBase.takeScrollPage procedure(long ev)
 
 spBrowseQueueBase.movePageDown procedure() ! private 
 
-listItems   long,auto
-listIndex   long,auto
+listIndex    long,auto
 totalRows long,auto
 
    code
 
-   listIndex  = self.listControl{PROP:Selected}
-   listItems = self.listControl{prop:items}
    totalRows = self.getNumberRows()
- 
-   self.debugStrOut.ouputStr('not in range')
+   if (self.rowNumber = totalRows)
+     return
+   end 
 
-   self.offset = self.rowNumber + (listItems - listIndex)
+   listIndex  = self.listControl{PROP:Selected}
+    
+   totalRows = self.getNumberRows()
+   self.offset = self.rowNumber + (self.listControl{prop:items} - listindex)
    if (self.offset > totalRows)
      self.offset = totalRows - self.pageSize
    end
-   !self.scrollPage(listIndex)
-   free(self.Que)
-   self.loadQueue(0)
-   get(self.Que, listIndex)
-   self.listControl{prop:Selected} = listIndex
-   self.queIndex = listIndex
+  self.scrollPage(listIndex)
 
    return
 ! --------------------------------------------------------------------------------------
@@ -333,26 +330,41 @@ listIndex  long,auto
 
    code
   
-   if (self.rowNumber <= self.listControl{prop:items})
-      self.offset = 0
-      self.scrollPage(1)
-   else 
-   if (self.rowNumber > 1) 
-       listIndex  = self.listControl{prop:Selected}
-        if (listIndex = self.listControl{prop:items})
-          listIndex = 1
-        end
-     self.debugStrOut.ouputStr('page up list index ' & listIndex & ' ' & self.offset)
-       self.offset = (self.rowNumber - self.listControl{prop:items}) 
-       if (self.offset < 0)
-         self.offset = 0
-       end       
-       self.scrollPage(listIndex)
-     end 
+   if (self.onMaxOrMin() = true) 
+     return
    end 
+   
+   listIndex  = self.listControl{PROP:Selected}   
+   self.offset = self.rowNumber - self.listControl{prop:items} 
+   self.debugStrOut.ouputStr('offset ' & self.offset & ' ' & listindex)
+   if (self.offset < 0)
+     self.offset = 0
+     listIndex = 1
+  end
+
+  self.scrollPage(listIndex)
 
    return
 ! ---------------------------------------------------------------------------------------
+
+spBrowseQueueBase.onMaxOrMin procedure() !,bool,private 
+
+  code
+
+  ! if on the first row we are done
+  if (self.rowNumber = firstRow) 
+    return true
+  end 
+  ! if on the last row we are done
+  if (self.rowNumber = self.getNumberRows())
+    self.listControl{prop:selected} = firstRow
+    self.queIndex = firstRow
+    get(self.que, firstRow)
+    return true
+  end
+  
+  return false
+! -------------------------------------------------------------------------------------- 
 
 spBrowseQueueBase.scrollPage procedure(long listIndex) ! private 
 
