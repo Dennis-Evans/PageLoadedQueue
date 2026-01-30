@@ -80,7 +80,7 @@ retv byte,auto
 
   code
 
-  retv = win.spBrw.loadQueue(0)
+  retv = win.spBrw.loadQueue()
 
   select(?personList)
   ?personList{prop:selected} = 1

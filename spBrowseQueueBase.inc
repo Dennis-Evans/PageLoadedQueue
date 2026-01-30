@@ -9,7 +9,7 @@ _spPageBrowseQueueBase_         EQUATE(1)
   include('debugStringOut.inc'),once
 
 startOffset             equate(0)
-defaultPageSize   equate(100)
+defaultPageSize   equate(30)
 firstRow                  equate(1)
 maxMsLabel           equate(128) 
 
@@ -96,11 +96,10 @@ construct                   procedure()
 
 !region setup
 !!!<summary>
-!!! default destructo, disposes objects members 
+!!! default destructo, disposes object members 
 !!!</summary>
 destruct                     procedure(),virtual
 
-!region setup
 !!!<summary>
 !!! sets up the instance with the inputs 
 !!!</summary>
@@ -121,6 +120,7 @@ init                              procedure(*group g, *queue q, long listCtrl)
 !!! set the code or sql statement for stored procedure call 
 !!!</summary>
 setSqlCode                 procedure(string cs)
+
 !!!<summary>
 !!! set the code or sql statement for stored procedure call 
 !!!</summary>
@@ -139,7 +139,7 @@ sqlCodeLength           procedure(),long
 setTotalRows             procedure(long tr)
 
 !!!<summary>
-!!! sets the schema name and the database named used by the function to count the rows 
+!!! sets the schema name and the database name used by the function to count the rows 
 !!!</summary>
 setDbNames               procedure(string sn, string tn)
 
@@ -159,7 +159,7 @@ getOffset                      procedure(),long
 setPageSize               procedure(long pageSize)
 
 !!!<summary>
-!!! get the pageSize value for the page load
+!!! get the pageSize value for the read
 !!!</summary>
 getPageSize                procedure(),long 
 
@@ -195,7 +195,7 @@ close                       procedure(),virtual
 !!!<remarks>
 !!! this function requires the <c>sqlCode</c> memeber is set
 !!!<remarks>
-loadQueue                  procedure(long rn),virtual,byte,proc
+loadQueue                  procedure(),virtual,byte,proc
 
 !!!<summary>
 !!! loads the queue from the result set. 
@@ -206,7 +206,7 @@ loadQueue                  procedure(long rn),virtual,byte,proc
 !!!<remarks>
 !!! this function sets the <c>sqlCode</c> memeber
 !!!<remarks>
-loadQueue                  procedure(*string cs, long rn),virtual,byte,proc
+loadQueue                  procedure(*string cs),virtual,byte,proc
 
 !!!<summary>
 !!! reads the rows from the result se and calls the functions to fill and format the 

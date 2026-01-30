@@ -54,7 +54,7 @@ next                         procedure(),byte
 !!! if rn = 1 then the call returns 
 !!! if rn = rows in the table then the call returns 
 !!!</param>
-loadQueue                    procedure(long rn),virtual,byte,proc
+loadQueue                    procedure(),virtual,byte,proc
 !!!<summary>
 !!! loads the queue from the data source
 !!!</summary>
@@ -67,7 +67,7 @@ loadQueue                    procedure(long rn),virtual,byte,proc
 !!! if rn = 1 then the call returns 
 !!! if rn = rows in the table then the call returns 
 !!!</param>
-loadQueue                    procedure(*string s, long rn),virtual,byte,proc
+loadQueue                    procedure(*string s),virtual,byte,proc
 
 !!!<summary>
 !!! reads the rows from the result set and calls the functions to fill and format the 

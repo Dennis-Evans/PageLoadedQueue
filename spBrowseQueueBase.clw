@@ -186,7 +186,7 @@ retv   long,auto
 !!!<remarks>
 !!! this function requires the <c>sqlCode</c> memeber is set
 !!!<remarks>
-spBrowseQueueBase.loadQueue procedure(long rn) !virtual,byte,proc
+spBrowseQueueBase.loadQueue procedure() !virtual,byte,proc
 
   code
   return 0
@@ -198,7 +198,7 @@ spBrowseQueueBase.loadQueue procedure(long rn) !virtual,byte,proc
 !!!<remarks>
 !!! this function requires the <c>sqlCode</c> memeber is set
 !!!<remarks>
-spBrowseQueueBase.loadQueue procedure(*string cs, long rn) !virtual,byte,proc
+spBrowseQueueBase.loadQueue procedure(*string cs) !virtual,byte,proc
   
   code 
   return 0
@@ -257,27 +257,33 @@ spBrowseQueueBase.removeQueueElement procedure(long index)
 !region scroll top/bottom 
 spBrowseQueueBase.takeScrollEnd procedure(long ev)
 
+saveIndex long
+
   code
 
  ! 0xC000041d = STATUS_FATAL_USER_CALLBACK_EXCEPTION
   if (ev = event:scrollBottom)
-    self.offset = self.totalRows - self.pageSize
-    free(self.que)
-    self.loadQueue(0)
-    self.queIndex = self.pageSize
-    get(self.que, self.queIndex)
-    self.listControl{prop:selected} = self.queIndex
-  else
-    self.offset = 0
-    free(self.que)
-    self.loadQueue(0)
-    self.queIndex = firstRow
-    get(self.Que, self.queIndex)
-    self.listControl{prop:selected} = self.queIndex
-  end  ! case event 
-
-  self.updateGroup()
-
+    if (self.rowNumber < self.getNumberRows())
+      self.offset = self.totalRows - self.pageSize
+      free(self.que)
+      self.loadQueue()
+      self.queIndex = self.pageSize
+      get(self.que, self.queIndex)
+      self.listControl{prop:selected} = self.queIndex 
+      self.updateGroup()
+   end 
+  else 
+    if (self.rowNumber > 1)  
+      self.offset = 0
+      free(self.que)
+      self.loadQueue()
+      self.queIndex = firstRow
+      get(self.Que, self.queIndex)
+      self.listControl{prop:selected} = self.queIndex  
+      self.updateGroup()
+   end
+  end  ! if ev
+  
   return
 ! ----------------------------------------------------------------------------------------
 !endregion scroll top/bottom 
@@ -371,7 +377,7 @@ spBrowseQueueBase.scrollPage procedure(long listIndex) ! private
   code
 
   free(self.Que)
-  self.loadQueue(0)
+  self.loadQueue()
   get(self.Que, listIndex)
   self.listControl{prop:Selected} = listIndex
   self.queIndex = listIndex
@@ -397,7 +403,7 @@ spBrowseQueueBase.takeScrollOne procedure(long ev)
 
 spBrowseQueueBase.moveDownOne procedure()
 
-rows  long auto
+rows          long auto
 savePage long,auto
 
   code
@@ -412,7 +418,7 @@ savePage long,auto
        self.offset = self.rowNumber
        savePage = self.pageSize 
        self.pageSize = 1
-       self.loadQueue(self.rowNumber) 
+       self.loadQueue() 
        self.removeQueueElement(1)
        get(self.Que, self.queIndex)    
        self.listControl{prop:selected} = self.queIndex
@@ -434,6 +440,7 @@ savePageSize long,auto
   if (self.rowNumber = 1) 
     return
   end
+
    if ((self.rowNumber > 1) and (self.QueIndex > 1))
       self.queIndex -= 1
        get(self.Que, self.queIndex)
@@ -448,7 +455,7 @@ savePageSize long,auto
         savePageSize = self.pageSize
         self.pageSize = 1
         self.addTop = true
-        self.loadQueue(self.rowNumber)
+        self.loadQueue()
         self.updateGroup()
         self.removeQueueElement(records(self.Que))
         get(self.Que, self.queIndex)

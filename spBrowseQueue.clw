@@ -125,7 +125,7 @@ retv      long,auto
 !!!<remarks>
 !!! this function requires the <c>sqlCode</c> memeber is set
 !!!<remarks>
-spBrowseQueue.loadQueue procedure(long rn) !virtual,byte
+spBrowseQueue.loadQueue procedure() !virtual,byte
 
 rows long,auto
 retv   byte(Level:Benign)
@@ -136,16 +136,7 @@ retv   byte(Level:Benign)
     return Level:Notify
   end
 
-  self.setTotalRows(self.countRows(self.schemaName, self.tableName))  
-
-  if (rn = 1)
-    return retv
-  end 
-
-  if (self.getNumberRows() = rn) 
-    return retv
-  end 
-
+  self.setTotalRows(self.countRows(self.schemaName, self.tableName))
   if (self.open() = level:benign) 
     self.readRows()
     self.close() 
@@ -156,14 +147,14 @@ retv   byte(Level:Benign)
   return retv
 ! ------------------------------------------------------------
 
-spBrowseQueue.loadQueue      procedure(*string s, long rn) !,virtual,byte
+spBrowseQueue.loadQueue      procedure(*string s) !,virtual,byte
 
 retv byte,auto
 
   code
 
   self.setSqlCode(s)
-  retv = self.loadQueue(rn)
+  retv = self.loadQueue()
 
   return retv
 ! --------------------------------------------------------------
