@@ -97,8 +97,23 @@ execSql                      procedure(),byte,protected
 !!!<returns>
 !!! a long value that is the number of rows in the table
 !!!</returns>
-countRows                    procedure(string schemaName, string tableName),long,virtual,protected
-!endregion database access 
-   end
+countRows       procedure(string schemaName, string tableName),long,virtual,protected
+
+!!!<summary>
+!!! iterate over the result set and fill and ofrmat the queue items 
+!!!</summary>
+loadResultSet procedure(),protected 
+
+!!!<summary>
+!!! bind any parameters used by the count rows function 
+!!!</summary>
+bindCountParameters  procedure(*long retv),private
+
+!!!<summary>
+!!! unbind any parameters used by the count rows function 
+!!!</summary>
+unbindCountParameters procedure(),private   
+!endregion database access   
+  end
 
 _EndOfInclude_

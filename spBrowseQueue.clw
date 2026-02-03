@@ -103,18 +103,14 @@ retv      long,auto
 
   code 
 
-  bind('inschemaName', self.schemaName)
-  bind('intableName', self.tableName)
-  bind('retv', retv)
+  self.bindCountParameters(retv)
   
   self.myFile{prop:sql} = 'noresultcall dbo.readPartitionRows(&inSchemaName [in], &inTableName [in], &retv [out])';
   if (errorcode() > 0)
     retv = -1
   end
 
-  unbind('inschemaName')
-  unbind('intableName')
-  unbind('retv')
+  self.unBindCountParameters()
 
   return retv
 ! --------------------------------------------------------------
@@ -166,10 +162,7 @@ spBrowseQueue.readRows procedure()
   self.bindParameters()  
   
    if (self.execSql() = Level:Benign) 
-     loop  while (self.next() = level:benign)
-       self.fillQueueBuffer()
-       self.formatQueue()
-    end
+    self.loadResultSet()
  end
 
   self.unbindParameters()
@@ -177,5 +170,38 @@ spBrowseQueue.readRows procedure()
   return
 ! ---------------------------------------------------------------------------------------------
 
+spBrowseQueue.loadResultSet procedure() !protected 
+
+  code
+
+   loop  while (self.next() = level:benign)
+      self.fillQueueBuffer()
+      self.formatQueue()
+   end
+
+  return
+! -------------------------------------------------------------------------------------------
+
+spBrowseQueue.bindCountParameters procedure(*long retv)
+
+  code
+
+  bind('inschemaName', self.schemaName)
+  bind('intableName', self.tableName)
+  bind('retv', retv)
+
+  return
+! ----------------------------------------------------------------------   
+
+spBrowseQueue.unbindCountParameters procedure()   
+
+  code
+
+  unbind('inschemaName')
+  unbind('intableName')
+  unbind('retv')
+
+  return
+! ----------------------------------------------------------------------   
 !endregion file access 
 

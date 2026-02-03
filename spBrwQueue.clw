@@ -9,8 +9,38 @@
   include('personGroup.inc').once
   include('spBrowseQueue.inc')once
   include('fileDef.inc'),once
-                     
-personQ  personQueue
+
+!region fields 
+!!!<summary>
+!!! queue used for the display, see personGroup.inc for definition 
+!!!</summary>
+personQ personQueue
+
+!!!<summary>
+!!!
+!!!</summary>
+thisWindow class(windowManager),type
+spBrw        &spBrowseQueue
+!!!<summary>
+!!!
+!!!</summary>
+init         procedure(),byte,virtual,proc
+!!!<summary>
+!!!
+!!!</summary>
+takeWindowEvent procedure(),byte,virtual  
+!!!<summary>
+!!!
+!!!</summary>
+loadQueue    procedure()
+                     end  
+! -----------------------------------------------------                      
+!!!<summary>
+!!!
+!!!</summary>
+win      thisWindow  
+!endregion fields 
+
 myWindow WINDOW('Caption'),AT(,,503,224),GRAY,FONT('Segoe UI',9)
     BUTTON('&OK'),AT(291,201,41,14),USE(?OkButton),DEFAULT
     BUTTON('&Cancel'),AT(340,201,42,14),USE(?CancelButton),STD(STD:Close)
@@ -20,15 +50,6 @@ myWindow WINDOW('Caption'),AT(,,503,224),GRAY,FONT('Segoe UI',9)
         '0)@s50@#5#80L(2)|M~middle Name~L(0)@s50@#6#80L(2)|M~last Name~L(0)@s50@' & |
         '#7#80L(2)|M~row number~L(0)@s50@#8#')
   END
-
-thisWindow class(windowManager),type
-spBrw                 &spBrowseQueue
-init                       procedure(),byte,virtual,proc
-takeWindowEvent procedure(),byte,virtual  
-loadQueue         procedure()
-                     end  
-
-win    thisWindow  
 
   code
 
@@ -68,11 +89,12 @@ retv byte,auto
       win.spBrw.setRowNumberPos(where(personQ, personQ.rowNumber)) 
       win.spBrw.setDbNames('person', 'person')
       win.spBrw.setSqlCode('call dbo.readTableOnePaged(&offset [in], &pageSize [in])')
-       self.loadQueue()
+      self.loadQueue()
     end 
   end
   
   return retv
+! ---------------------------------------------------------------------
 
 thisWindow.loadQueue procedure()
 

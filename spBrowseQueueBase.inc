@@ -255,27 +255,22 @@ movePageDown       procedure(),private
 !!!</summary>
 movePageUp            procedure(), private 
 
-!!!<summary>
-!!! moves the queue using the input
-!!!</summary>
-!!!<param name='listIndex'>
-!!!index into the list or the queue, postions the list
-!!!</param>
-scrollPage                  procedure(long listIndex),private 
-
-!!!<summary>
-!!! checks the potion of the queue is on the first row or the last row.
-!!! ;ast row is the last row in the table not the last row based on the page size 
-!!!</summary>
-!!!<remarks>
-!!! called by movePageUp
-!!!</remarks>
-onMaxOrMin             procedure(),bool,private 
 !endregion scroll page up/down
 
 !region scroll one row 
+!!!<summary>
+!!! moves the queue selection up or down one row 
+!!!</summary>
 takeScrollOne           procedure(long ev)
+
+!!!<summary>
+!!! moves the queue selection down one row 
+!!!</summary>
 moveDownOne         procedure()
+
+!!!<summary>
+!!! moves the queue selection up one row 
+!!!</summary>
 moveUpOne               procedure()
 !endregion scroll one row 
 !endregion scrolling 
