@@ -75,46 +75,9 @@ retv byte(level:benign)
 
   return retv
 ! ---------------------------------------------------------------
+!endregion file access
 
-!!!<summary>
-!!! executes the sql statement using prop:sql
-!!!</summary>
-!!!<returns>
-!!! A  byte value, level:benign idicates success, any other value is a failure 
-!!!</returns>
-spBrowseQueue.execSql procedure() !byte,protected
-
-retv byte(level:benign)
-cnt long(0)
-
-  code 
-  
-  self.myFile{prop:sql} = self.getSqlCode() 
-  if (errorcode() <> 0)
-    retv = Level:Notify
-  end
-
-  return retv
-! --------------------------------------------------------------
-
-spBrowseQueue.countRows procedure(string schemaName, string tableName) !virtual,byte,protected
-
-retv      long,auto
-
-  code 
-
-  self.bindCountParameters(retv)
-  
-  self.myFile{prop:sql} = 'noresultcall dbo.readPartitionRows(&inSchemaName [in], &inTableName [in], &retv [out])';
-  if (errorcode() > 0)
-    retv = -1
-  end
-
-  self.unBindCountParameters()
-
-  return retv
-! --------------------------------------------------------------
-
+!region load queue
 !!!<summary>
 !!! loads the queue from the result set. 
 !!!</summary>
@@ -143,6 +106,13 @@ retv   byte(Level:Benign)
   return retv
 ! ------------------------------------------------------------
 
+!!!<summary>
+!!! loads the queue from the data source
+!!!</summary>
+!!!<param name="s">
+!!! string that contains the sql statement to be executed,
+!!! assigns the string to the data member
+!!!</param>
 spBrowseQueue.loadQueue      procedure(*string s) !,virtual,byte
 
 retv byte,auto
@@ -155,33 +125,102 @@ retv byte,auto
   return retv
 ! --------------------------------------------------------------
 
+!!!<summary>
+!!! reads the rows from the result set and calls the functions to fill and format the 
+!!! the queue record for each row 
+!!!</summary>
 spBrowseQueue.readRows procedure() 
 
   code
 
   self.bindParameters()  
   
-   if (self.execSql() = Level:Benign) 
-    self.loadResultSet()
- end
+  if (self.execSql() = Level:Benign) 
+   self.loadResultSet()
+  end
 
   self.unbindParameters()
 
   return
 ! ---------------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! iterate over the result set and fill and format the queue items 
+!!!</summary>
 spBrowseQueue.loadResultSet procedure() !protected 
 
   code
 
-   loop  while (self.next() = level:benign)
-      self.fillQueueBuffer()
-      self.formatQueue()
-   end
+  loop while (self.next() = level:benign)
+    self.fillQueueBuffer()
+    self.formatQueue()
+  end
 
   return
 ! -------------------------------------------------------------------------------------------
+!endregion load queue
 
+!region database access
+!!!<summary>
+!!! executes the sql statement using prop:sql
+!!!</summary>
+!!!<returns>
+!!! A  byte value, level:benign idicates success, any other value is a failure 
+!!!</returns>
+spBrowseQueue.execSql procedure() !byte,protected
+
+retv byte(level:benign)
+cnt long(0)
+
+  code 
+  
+  self.myFile{prop:sql} = self.getSqlCode() 
+  if (errorcode() <> 0)
+    retv = Level:Notify
+  end
+
+  return retv
+! --------------------------------------------------------------
+
+!!!<summary>
+!!! counts the rows in the table input 
+!!!</summary>
+!!!<param name="schemaName">
+!!! name of the schema for the table
+!!!</param>
+!!!<param name="tableName">
+!!! name of the table
+!!!</param>
+!!!<returns>
+!!! a long value that is the number of rows in the table
+!!!</returns>
+!!!<remarks>
+!!! this sp call uses the row column from the partition table
+!!! the column may not be updated quickly after a roll back 
+!!!</remarks>
+spBrowseQueue.countRows procedure(string schemaName, string tableName) !virtual,byte,protected
+
+retv      long,auto
+
+  code 
+
+  self.bindCountParameters(retv)
+  
+  self.myFile{prop:sql} = 'noresultcall dbo.readPartitionRows(&inSchemaName [in], &inTableName [in], &retv [out])';
+  if (errorcode() > 0)
+    retv = -1
+  end
+
+  self.unBindCountParameters()
+
+  return retv
+! --------------------------------------------------------------
+!endregion database access
+
+!region count parameters
+!!!<summary>
+!!! bind any parameters used by the count rows function 
+!!!</summary>
 spBrowseQueue.bindCountParameters procedure(*long retv)
 
   code
@@ -193,6 +232,9 @@ spBrowseQueue.bindCountParameters procedure(*long retv)
   return
 ! ----------------------------------------------------------------------   
 
+!!!<summary>
+!!! unbind any parameters used by the count rows function 
+!!!</summary>
 spBrowseQueue.unbindCountParameters procedure()   
 
   code
@@ -203,5 +245,5 @@ spBrowseQueue.unbindCountParameters procedure()
 
   return
 ! ----------------------------------------------------------------------   
-!endregion file access 
+!endregion count parameters
 

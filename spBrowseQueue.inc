@@ -42,19 +42,15 @@ close                        procedure(),virtual
 !!!<remarks>
 !!! the call will return notify when the last row is read, this is expected 
 !!!<remarks>
-next                         procedure(),byte
+next procedure(),byte
 !endregion file access 
 
-!region queue load
+!region load queue
 !!!<summary>
 !!! loads the queue from the data source
 !!!</summary>
-!!!<param name="rn">
-!!! rn, row number to do some checks, 
-!!! if rn = 1 then the call returns 
-!!! if rn = rows in the table then the call returns 
-!!!</param>
-loadQueue                    procedure(),virtual,byte,proc
+loadQueue procedure(),virtual,byte,proc
+
 !!!<summary>
 !!! loads the queue from the data source
 !!!</summary>
@@ -62,18 +58,17 @@ loadQueue                    procedure(),virtual,byte,proc
 !!! string that contains the sql statement to be executed,
 !!! assigns the string to the data member
 !!!</param>
-!!!<param name="rn">
-!!! rn, row number to do some checks, 
-!!! if rn = 1 then the call returns 
-!!! if rn = rows in the table then the call returns 
-!!!</param>
-loadQueue                    procedure(*string s),virtual,byte,proc
+loadQueue procedure(*string s),virtual,byte,proc
 
 !!!<summary>
 !!! reads the rows from the result set and calls the functions to fill and format the 
 !!! the queue record for each row 
 !!!</summary>
-readRows                     procedure(),virtual
+readRows procedure(),virtual
+!!!<summary>
+!!! iterate over the result set and fill and format the queue items 
+!!!</summary>
+loadResultSet procedure(),protected 
 !endregion queue load
 
 !region database access 
@@ -97,13 +92,14 @@ execSql                      procedure(),byte,protected
 !!!<returns>
 !!! a long value that is the number of rows in the table
 !!!</returns>
+!!!<remarks>
+!!! this sp call uses the row column from the partition table
+!!! the column may not be updated quick;y after a roll back 
+!!!</remarks>
 countRows       procedure(string schemaName, string tableName),long,virtual,protected
+!endregion database access 
 
-!!!<summary>
-!!! iterate over the result set and fill and ofrmat the queue items 
-!!!</summary>
-loadResultSet procedure(),protected 
-
+!region count parameters
 !!!<summary>
 !!! bind any parameters used by the count rows function 
 !!!</summary>
@@ -113,7 +109,7 @@ bindCountParameters  procedure(*long retv),private
 !!! unbind any parameters used by the count rows function 
 !!!</summary>
 unbindCountParameters procedure(),private   
-!endregion database access   
+!endregion count parameters
   end
 
 _EndOfInclude_

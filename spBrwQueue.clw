@@ -96,13 +96,14 @@ retv byte,auto
   return retv
 ! ---------------------------------------------------------------------
 
+! loads the queue and sets up the display of the list box
 thisWindow.loadQueue procedure()
 
 retv byte,auto
 
   code
 
-  retv = win.spBrw.loadQueue()
+  retv = self.spBrw.loadQueue()
 
   select(?personList)
   ?personList{prop:selected} = 1

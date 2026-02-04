@@ -352,17 +352,20 @@ listIndex  long,auto
 
    code
   
+  self.debugStrOut.ouputStr('items ' & self.listControl{prop:items})
+
   if (self.rowNumber = firstRow)
     return
    end
   
    if (self.rowNumber = self.getNumberRows())
+   self.debugStrOut.ouputStr('on last row ' & self.listControl{prop:selected})
     listIndex = 1
-    self.offset = self.rowNumber - self.listControl{prop:items} 
   else      
-     listIndex  = self.listControl{PROP:Selected}   
-    self.offset = self.rowNumber - self.pageSize
+   self.debugStrOut.ouputStr('selected ' & self.listControl{prop:selected})
+    listIndex = self.listControl{prop:selected}
   end
+   self.offset = self.rowNumber - self.listControl{prop:items} 
    self.debugStrOut.ouputStr('offset ' & self.offset & ' ' & listindex)
    if (self.offset < 0)
      self.offset = 0
@@ -373,7 +376,7 @@ listIndex  long,auto
   self.loadQueue()
   get(self.Que, listIndex)
   self.listControl{prop:Selected} = listIndex
-  self.queIndex = choice(self.listControl)
+  self.queIndex = listIndex !choice(self.listControl)
 
 !  self.scrollPage(listIndex)
   self.debugStrOut.ouputStr('que index ' & self.queIndex & ' row number ' & self.rowNumber)
@@ -425,6 +428,7 @@ savePage long,auto
   end
 
   self.updateGroup()
+  display(self.listControl)
 
   return
 ! -----------------------------------------------------------------------------------------
@@ -462,6 +466,8 @@ savePageSize long,auto
         self.pageSize = savePageSize
     end  
   end
+
+  display(self.listControl)
 
   return
 ! -----------------------------------------------------------------------------------------
