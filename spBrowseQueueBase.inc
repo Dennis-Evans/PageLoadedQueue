@@ -9,7 +9,7 @@ _spPageBrowseQueueBase_         EQUATE(1)
   include('debugStringOut.inc'),once
 
 startOffset             equate(0)
-defaultPageSize   equate(30)
+defaultPageSize   equate(200)
 firstRow                  equate(1)
 maxMsLabel           equate(128) 
 
@@ -83,9 +83,9 @@ totalRows                  long,private
 sqlCode                     &IDynStr,private
 
 schemaName           string(maxMsLabel),protected
-tableName                string(maxMsLabel),protected
+tableName            string(maxMsLabel),protected
 
-debugStrOut             &debugStrOut,protected
+debugStrOut          &debugStrOut,protected
 !endregion fields 
 
 !region setup clean up
@@ -94,7 +94,6 @@ debugStrOut             &debugStrOut,protected
 !!!</summary>
 construct                   procedure()
 
-!region setup
 !!!<summary>
 !!! default destructo, disposes object members 
 !!!</summary>
@@ -116,6 +115,12 @@ init                              procedure(*group g, *queue q, long listCtrl)
 !region setup clean up
 
 !region getters and setters 
+
+!!!<summary>
+!!! setter the total rows member closes the file in use
+!!!</summary>
+setTotalRows             procedure(long tr)
+
 !!!<summary>
 !!! set the code or sql statement for stored procedure call 
 !!!</summary>
@@ -135,8 +140,6 @@ getSqlCode                 procedure(),*cstring
 !!! gets the length of the SQL statement in use, used to check the statement has been assigned 
 !!!</summary>
 sqlCodeLength           procedure(),long
-
-setTotalRows             procedure(long tr)
 
 !!!<summary>
 !!! sets the schema name and the database name used by the function to count the rows 
@@ -215,7 +218,7 @@ loadQueue                  procedure(*string cs),virtual,byte,proc
 readRows                  procedure(),virtual,byte
 
 !!!<summary>
-!!! fills the queue buffer from the values read, once for each row i nthe result set
+!!! fills the queue buffer from the values read, once for each row in the result set
 !!!</summary>
 fillQueueBuffer         procedure(),virtual
 
@@ -243,10 +246,17 @@ takeScrollEnd           procedure(long ev)
 !!!<summary>
 !!! scrolls the queue one page up or down
 !!!</summary>
+!!!<param name='ev'>
+!!! id of the event, page up or page down 
+!!!</param>
+!!!<remarks>
+!!! moves the queue down one page, the page in this case is the list control prop:items and 
+!!! not the pageSize data member 
+!!!</remarks>
 takeScrollPage         procedure(long ev)
 
 !!!<summary>
-!!! moves the queue down one page 
+!!! moves the queue down one page
 !!!</summary>
 movePageDown       procedure(),private
 

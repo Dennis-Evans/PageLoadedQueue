@@ -202,7 +202,7 @@ spBrowseQueue.countRows procedure(string schemaName, string tableName) !virtual,
 
 retv      long,auto
 
-  code 
+  code
 
   self.bindCountParameters(retv)
   

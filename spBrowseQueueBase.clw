@@ -7,7 +7,10 @@
   include('spBrowseQueueBase.inc')once
   include('debugStringOut.inc'),once
 
-!region setup cleanup
+!region setup clean up
+!!!<summary>
+!!! default constructor, sets some starting values and allocates two objects 
+!!!</summary>
 spBrowseQueueBase.construct procedure()
   
   code 
@@ -22,6 +25,9 @@ spBrowseQueueBase.construct procedure()
   return
 ! ----------------------------------------------------------------
  
+ !!!<summary>
+!!! default destructo, disposes object members 
+!!!</summary>
 spBrowseQueueBase.destruct procedure()
 
   code 
@@ -32,6 +38,18 @@ spBrowseQueueBase.destruct procedure()
   return 
 ! -------------------------------------------------------------
 
+!!!<summary>
+!!! sets up the instance with the inputs 
+!!!</summary>
+!!!<param name='g'>
+!!! referenceto the group used.  
+!!!</param>
+!!!<param name='q'>
+!!! referenceto the queue used.  
+!!!</param>
+!!!<param name='listCtl'>
+!!! id number of the list control used to dieplay the queue 
+!!!</param>
 spBrowseQueueBase.init procedure(*group g, *queue q, long listCtrl)
 
   code
@@ -46,7 +64,8 @@ spBrowseQueueBase.init procedure(*group g, *queue q, long listCtrl)
 
 !region open close
 !!!<summary>
-!!! opens the file for use 
+!!! opens the conection, file or what ever the data source uses 
+!!! must be overloaded in a derived object
 !!!</summary>
 spBrowseQueueBase.open  procedure() !,byte,virtual
 
@@ -68,6 +87,9 @@ spBrowseQueueBase.close procedure() !,virtual
 
 !region getters and setters 
 
+!!!<summary>
+!!! setter the total rows member closes the file in use
+!!!</summary>
 spBrowseQueueBase.setTotalRows procedure(long tr)
  
   code
@@ -77,21 +99,9 @@ spBrowseQueueBase.setTotalRows procedure(long tr)
   return
 ! ----------------------------------------------------------------------
 
-! add the single quotes here, 
-spBrowseQueueBase.setDbNames procedure(string sn, string tn)
-
-
-  code
-
-  self.schemaname =  sn
-  self.tablename = tn
-  
-!  self.schemaname = '<39>' & sn & '<39>'
-!  self.tablename = '<39>' & tn & '<39>'
-
-  return 
-! ----------------------------------------------------------------------
-
+!!!<summary>
+!!! set the code or sql statement for stored procedure call 
+!!!</summary>
 spBrowseQueueBase.setSqlCode procedure(string cs)
 
   code
@@ -100,7 +110,11 @@ spBrowseQueueBase.setSqlCode procedure(string cs)
   self.sqlCode.Cat(cs) 
 
   return
+! ----------------------------------------------------------------------
 
+!!!<summary>
+!!! set the code or sql statement for stored procedure call 
+!!!</summary>
 spBrowseQueueBase.setSqlCode procedure(*IDynStr cs)
 
   code
@@ -111,6 +125,12 @@ spBrowseQueueBase.setSqlCode procedure(*IDynStr cs)
   return
 ! --------------------------------------------------------------------
 
+!!!<summary>
+!!! getter the the SQL statement in use
+!!!</summary>
+!!!<returns>
+!!! a cstring with the sal statement 
+!!!</returns>
 spBrowseQueueBase.getSqlCode procedure() !*cstring
 
   code
@@ -118,17 +138,36 @@ spBrowseQueueBase.getSqlCode procedure() !*cstring
   return self.sqlCode.CStr()
 ! --------------------------------------------------------------------
 
+!!!<summary>
+!!! gets the length of the SQL statement in use, used to check the statement has been assigned 
+!!!</summary>
 spBrowseQueueBase.sqlCodeLength procedure() !,long
 
 retv long,auto
 
   code
 
-   retv = self.sqlCode.StrLen()
+  retv = self.sqlCode.StrLen()
 
-   return retv
+  return retv
  ! -------------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! sets the schema name and the database name used by the function to count the rows 
+!!!</summary>
+spBrowseQueueBase.setDbNames procedure(string sn, string tn)
+
+  code
+
+  self.schemaname =  sn
+  self.tablename = tn
+  
+  return 
+! ----------------------------------------------------------------------
+
+!!!<summary>
+!!! set the offSet value for the page load
+!!!</summary>
 spBrowseQueueBase.setOffset procedure(long offset)
 
   code 
@@ -138,6 +177,9 @@ spBrowseQueueBase.setOffset procedure(long offset)
   return
 ! -------------------------------------------------------------------
 
+!!!<summary>
+!!! get the offSet value for the page load
+!!!</summary>
 spBrowseQueueBase.getOffset procedure() !long 
 
   code
@@ -145,6 +187,9 @@ spBrowseQueueBase.getOffset procedure() !long
   return self.offset
 ! ------------------------------------------------------------------
 
+!!!<summary>
+!!! set the pageSize value for the page load
+!!!</summary>
 spBrowseQueueBase.setPageSize procedure(long pageSize)
 
   code 
@@ -154,12 +199,20 @@ spBrowseQueueBase.setPageSize procedure(long pageSize)
   return
 ! -------------------------------------------------------------------
 
+!!!<summary>
+!!! get the pageSize value for the read
+!!!</summary>
 spBrowseQueueBase.getPageSize procedure() !long 
 
   code
 
   return self.pageSize
 ! ------------------------------------------------------------------
+
+!!!<summary>
+!!! sets the position of the row number value in the queue.  the row number is from the 
+!!! query or stored procedure, aids to tracking the reads of the queue 
+!!!</summary>
 
 spBrowseQueueBase.setRowNumberPos procedure(long pos)
 
@@ -170,6 +223,9 @@ spBrowseQueueBase.setRowNumberPos procedure(long pos)
   return
 ! ------------------------------------------------------------------
 
+!!!<summary>
+!!! gets the number of rows from the data source
+!!!</summary>
 spBrowseQueueBase.getNumberRows procedure() !long
  
 retv   long,auto
@@ -241,6 +297,10 @@ spBrowseQueueBase.formatQueue procedure()  !virtual
   return
 ! -------------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! removes an element from the queue, typically the first or last element. 
+!!! called when scrolling a single row up or down 
+!!!</summary>
 spBrowseQueueBase.removeQueueElement procedure(long index)
 
   code
@@ -255,6 +315,9 @@ spBrowseQueueBase.removeQueueElement procedure(long index)
 !region scrolling 
 
 !region scroll top/bottom 
+!!!<summary>
+!!! scrolls the queue to the first or last row 
+!!!</summary>
 spBrowseQueueBase.takeScrollEnd procedure(long ev)
 
 saveIndex long
@@ -289,6 +352,16 @@ saveIndex long
 !endregion scroll top/bottom 
 
 !region scroll page up/down
+!!!<summary>
+!!! scrolls the queue one page up or down
+!!!</summary>
+!!!<param name='ev'>
+!!! id of the event, page up or page down 
+!!!</param>
+!!!<remarks>
+!!! moves the queue down one page, the page in this case is the list control prop:items and 
+!!! not the pageSize data member 
+!!!</remarks>
 spBrowseQueueBase.takeScrollPage procedure(long ev)
 
   code
@@ -300,20 +373,28 @@ spBrowseQueueBase.takeScrollPage procedure(long ev)
   end 
 
   self.updateGroup()
-
+  
   display(self.listControl)
 
   return
 ! ----------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! moves the queue down one page
+!!!</summary>
 spBrowseQueueBase.movePageDown procedure() ! private 
 
 listIndex    long,auto
 totalRows long,auto
 lastPage     long,auto
 
+currentPage long,auto
+
    code
 
+  currentPage = self.rowNumber / self.pageSize
+  self.debugStrOut.ouputStr('current page ' & currentPage)
+  ! if totals equal nothing to do
    totalRows = self.getNumberRows()
    if (self.rowNumber = totalRows)
      return
@@ -324,7 +405,12 @@ lastPage     long,auto
   lastPage =  totalRows - self.listControl{prop:items}
      self.debugStrOut.ouputStr('last page ' & lastPage)
    self.offset = self.rowNumber + (self.listControl{prop:items} - listindex)
-   self.debugStrOut.ouputStr('offset ' & self.offset)
+   self.debugStrOut.ouputStr('offset ' & self.offset & ' current page ' & currentPage)
+   if (self.offset < currentPage) 
+      self.debugStrOut.ouputStr('do not load queue')
+   else 
+     self.debugStrOut.ouputStr('load queue')
+     end
    if (self.offset >= totalRows)
      self.offset = totalRows - self.listControl{prop:items} 
      self.debugStrOut.ouputStr('offset 1 ' & self.offset)
@@ -346,6 +432,9 @@ lastPage     long,auto
    return
 ! --------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! moves the queue up one page 
+!!!</summary>
 spBrowseQueueBase.movePageUp procedure() ! private 
 
 listIndex  long,auto 
@@ -354,9 +443,10 @@ listIndex  long,auto
   
   self.debugStrOut.ouputStr('items ' & self.listControl{prop:items})
 
+  ! nothing to do
   if (self.rowNumber = firstRow)
     return
-   end
+  end
   
    if (self.rowNumber = self.getNumberRows())
    self.debugStrOut.ouputStr('on last row ' & self.listControl{prop:selected})
@@ -365,21 +455,20 @@ listIndex  long,auto
    self.debugStrOut.ouputStr('selected ' & self.listControl{prop:selected})
     listIndex = self.listControl{prop:selected}
   end
-   self.offset = self.rowNumber - self.listControl{prop:items} 
+   self.offset = (self.rowNumber - 1) - self.listControl{prop:items}
    self.debugStrOut.ouputStr('offset ' & self.offset & ' ' & listindex)
-   if (self.offset < 0)
+   if (self.offset < 1)
      self.offset = 0
-     listIndex = 1
   end
 
   free(self.Que)
   self.loadQueue()
-  get(self.Que, listIndex)
-  self.listControl{prop:Selected} = listIndex
-  self.queIndex = listIndex !choice(self.listControl)
+  get(self.Que, 1)
+  self.listControl{prop:Selected} = 1! listIndex
+  self.queIndex = 1 !listIndex !choice(self.listControl)
 
 !  self.scrollPage(listIndex)
-  self.debugStrOut.ouputStr('que index ' & self.queIndex & ' row number ' & self.rowNumber)
+  !self.debugStrOut.ouputStr('que index ' & self.queIndex & ' row number ' & self.rowNumber)
   self.updateGroup()
   self.debugStrOut.ouputStr('que index ' & self.queIndex & ' row number ' & self.rowNumber)
 
@@ -388,6 +477,13 @@ listIndex  long,auto
 !endregion scroll page up/down
 
 !region scroll one row 
+!!!<summary>
+!!! moves the queue selection up or down one row 
+!!!</summary>
+!!!<remarks>
+!!! depending on the up or down direction and if the queue is on the first or last row 
+!!! this will read one row from the data source and remove one element form the queue  
+!!!</remarks>
 spBrowseQueueBase.takeScrollOne procedure(long ev)
 
   code
@@ -402,6 +498,9 @@ spBrowseQueueBase.takeScrollOne procedure(long ev)
   return
 ! ------------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! moves the queue selection down one row 
+!!!</summary>
 spBrowseQueueBase.moveDownOne procedure()
 
 rows          long auto
@@ -433,6 +532,9 @@ savePage long,auto
   return
 ! -----------------------------------------------------------------------------------------
 
+!!!<summary>
+!!! moves the queue selection up one row 
+!!!</summary>
 spBrowseQueueBase.moveUpOne procedure()
 
 savePageSize long,auto
@@ -502,7 +604,9 @@ spBrowseQueueBase.countRows procedure(string schemaName, string tableName) !virt
    return 0
 ! ---------------------------------------------------------------------------------------
 
-! updates the group from the queue and set the current row number property 
+!!!<summary>
+!!! updates the queue and sets the row number field to the current value
+!!!</summary>
 spBrowseQueueBase.updateGroup      procedure() ! virtual
 
 a any,auto
